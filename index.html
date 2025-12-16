@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>RideWrapped 2025 | Your Year on Two Wheels</title>
+    <meta
+      name="description"
+      content="Your annual riding recap. Every kilometer tells a story."
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Leaflet.js for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- html2canvas for image capture -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- App Container -->
+    <div id="app">
+      <!-- Intro Screen -->
+      <section id="intro-screen" class="screen active">
+        <div class="intro-content">
+          <div class="logo-animation">
+            <div class="road-line"></div>
+            <span class="logo-icon">🏍️</span>
+          </div>
+          <h1 class="intro-title">RideWrapped</h1>
+          <p class="intro-year">2025</p>
+          <p class="intro-tagline">Your year. Your roads.</p>
+          <button id="start-btn" class="cta-button">
+            <span>Let's Begin</span>
+            <svg
+              class="arrow-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <div class="bg-gradient"></div>
+      </section>
+
+      <!-- Questionnaire Screen -->
+      <section id="questionnaire-screen" class="screen">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="questions-container">
+          <!-- Question 1: Name -->
+          <div class="question-slide active" data-step="1">
+            <div class="question-content">
+              <span class="question-number">01</span>
+              <h2 class="question-title">First, what should we call you?</h2>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="user-name"
+                  class="text-input"
+                  placeholder="Your name"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2: Total Distance -->
+          <div class="question-slide" data-step="2">
+            <div class="question-content">
+              <span class="question-number">02</span>
+              <h2 class="question-title">
+                How many kilometers did you ride this year?
+              </h2>
+              <div class="input-group">
+                <input
+                  type="number"
+                  id="total-distance"
+                  class="number-input"
+                  placeholder="0"
+                  min="0"
+                  max="100000"
+                />
+                <span class="input-suffix">km</span>
+              </div>
+              <p class="input-hint">Your best estimate works!</p>
+            </div>
+          </div>
+
+          <!-- Question 3: Journey Locations -->
+          <div class="question-slide" data-step="3">
+            <div class="question-content">
+              <span class="question-number">03</span>
+              <h2 class="question-title">Where did you ride this year?</h2>
+              <p class="input-hint" style="margin-bottom: 1rem;">Add all the places you visited 🗺️</p>
+              <div class="locations-container" id="locations-container">
+                <div class="location-input-row" data-index="0">
+                  <span class="location-number">1</span>
+                  <input
+                    type="text"
+                    class="text-input location-input"
+                    placeholder="e.g. Mumbai"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="location-input-row" data-index="1">
+                  <span class="location-number">2</span>
+                  <input
+                    type="text"
+                    class="text-input location-input"
+                    placeholder="e.g. Pune"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="location-input-row" data-index="2">
+                  <span class="location-number">3</span>
+                  <input
+                    type="text"
+                    class="text-input location-input"
+                    placeholder="e.g. Goa"
+                    autocomplete="off"
+                  />
+                </div>
+              </div>
+              <button type="button" id="add-location-btn" class="add-location-btn">
+                <span>+ Add another stop</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Question 4: Days Ridden -->
+          <div class="question-slide" data-step="4">
+            <div class="question-content">
+              <span class="question-number">04</span>
+              <h2 class="question-title">How many days did you ride?</h2>
+              <div class="input-group">
+                <input
+                  type="number"
+                  id="days-ridden"
+                  class="number-input"
+                  placeholder="0"
+                  min="0"
+                  max="365"
+                />
+                <span class="input-suffix">days</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 5: Favorite Time -->
+          <div class="question-slide" data-step="5">
+            <div class="question-content">
+              <span class="question-number">05</span>
+              <h2 class="question-title">When do you love to ride most?</h2>
+              <div class="options-grid">
+                <button class="option-card" data-value="dawn">
+                  <span class="option-emoji">🌅</span>
+                  <span class="option-label">Dawn</span>
+                </button>
+                <button class="option-card" data-value="morning">
+                  <span class="option-emoji">☀️</span>
+                  <span class="option-label">Morning</span>
+                </button>
+                <button class="option-card" data-value="afternoon">
+                  <span class="option-emoji">🌤️</span>
+                  <span class="option-label">Afternoon</span>
+                </button>
+                <button class="option-card" data-value="evening">
+                  <span class="option-emoji">🌆</span>
+                  <span class="option-label">Evening</span>
+                </button>
+                <button class="option-card" data-value="night">
+                  <span class="option-emoji">🌙</span>
+                  <span class="option-label">Night</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 6: Favorite Terrain -->
+          <div class="question-slide" data-step="6">
+            <div class="question-content">
+              <span class="question-number">06</span>
+              <h2 class="question-title">What terrain calls to you?</h2>
+              <div class="options-grid">
+                <button class="option-card" data-value="mountains">
+                  <span class="option-emoji">🏔️</span>
+                  <span class="option-label">Mountains</span>
+                </button>
+                <button class="option-card" data-value="highways">
+                  <span class="option-emoji">🛣️</span>
+                  <span class="option-label">Highways</span>
+                </button>
+                <button class="option-card" data-value="city">
+                  <span class="option-emoji">🌃</span>
+                  <span class="option-label">City Streets</span>
+                </button>
+                <button class="option-card" data-value="coastal">
+                  <span class="option-emoji">🌊</span>
+                  <span class="option-label">Coastal Roads</span>
+                </button>
+                <button class="option-card" data-value="countryside">
+                  <span class="option-emoji">🌾</span>
+                  <span class="option-label">Countryside</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 7: Longest Ride -->
+          <div class="question-slide" data-step="7">
+            <div class="question-content">
+              <span class="question-number">07</span>
+              <h2 class="question-title">What was your longest single ride?</h2>
+              <div class="input-group">
+                <input
+                  type="number"
+                  id="longest-ride"
+                  class="number-input"
+                  placeholder="0"
+                  min="0"
+                  max="10000"
+                />
+                <span class="input-suffix">km</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 8: Favorite Day -->
+          <div class="question-slide" data-step="8">
+            <div class="question-content">
+              <span class="question-number">08</span>
+              <h2 class="question-title">Your favorite day to ride?</h2>
+              <div class="options-grid days-grid">
+                <button class="option-card small" data-value="monday">
+                  Mon
+                </button>
+                <button class="option-card small" data-value="tuesday">
+                  Tue
+                </button>
+                <button class="option-card small" data-value="wednesday">
+                  Wed
+                </button>
+                <button class="option-card small" data-value="thursday">
+                  Thu
+                </button>
+                <button class="option-card small" data-value="friday">
+                  Fri
+                </button>
+                <button class="option-card small" data-value="saturday">
+                  Sat
+                </button>
+                <button class="option-card small" data-value="sunday">
+                  Sun
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 9: Weather Preference -->
+          <div class="question-slide" data-step="9">
+            <div class="question-content">
+              <span class="question-number">09</span>
+              <h2 class="question-title">Your ideal riding weather?</h2>
+              <div class="options-grid">
+                <button class="option-card" data-value="sunny">
+                  <span class="option-emoji">☀️</span>
+                  <span class="option-label">Sunny</span>
+                </button>
+                <button class="option-card" data-value="cloudy">
+                  <span class="option-emoji">⛅</span>
+                  <span class="option-label">Cloudy</span>
+                </button>
+                <button class="option-card" data-value="rainy">
+                  <span class="option-emoji">🌧️</span>
+                  <span class="option-label">Rainy</span>
+                </button>
+                <button class="option-card" data-value="any">
+                  <span class="option-emoji">🌈</span>
+                  <span class="option-label">Any Weather</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 10: Ride Length Preference -->
+          <div class="question-slide" data-step="10">
+            <div class="question-content">
+              <span class="question-number">10</span>
+              <h2 class="question-title">Your typical ride length?</h2>
+              <div class="options-grid vertical">
+                <button class="option-card horizontal" data-value="short">
+                  <span class="option-emoji">⚡</span>
+                  <div class="option-text">
+                    <span class="option-label">Quick Spins</span>
+                    <span class="option-desc">Under 50 km</span>
+                  </div>
+                </button>
+                <button class="option-card horizontal" data-value="medium">
+                  <span class="option-emoji">🛤️</span>
+                  <div class="option-text">
+                    <span class="option-label">Day Trips</span>
+                    <span class="option-desc">50-200 km</span>
+                  </div>
+                </button>
+                <button class="option-card horizontal" data-value="long">
+                  <span class="option-emoji">🗺️</span>
+                  <div class="option-text">
+                    <span class="option-label">Long Hauls</span>
+                    <span class="option-desc">200+ km</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 11: Memorable Moment -->
+          <div class="question-slide" data-step="11">
+            <div class="question-content">
+              <span class="question-number">11</span>
+              <h2 class="question-title">
+                Describe your most memorable ride this year
+              </h2>
+              <div class="input-group">
+                <textarea
+                  id="memorable-moment"
+                  class="textarea-input"
+                  placeholder="That early morning ride to the hills... the mist, the silence, the view at the top."
+                  rows="4"
+                ></textarea>
+              </div>
+              <p class="input-hint">This will appear in your RideWrapped ✨</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="question-nav">
+          <button id="prev-btn" class="nav-button prev" disabled>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button id="next-btn" class="nav-button next">
+            <span>Next</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button id="generate-btn" class="cta-button generate hidden">
+            <span>Generate My RideWrapped</span>
+            <span class="sparkle">✨</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Slides Screen -->
+      <section id="slides-screen" class="screen">
+        <div class="slides-container" id="slides-container">
+          <!-- Slides will be dynamically generated -->
+        </div>
+
+        <!-- Slide Navigation -->
+        <div class="slide-nav">
+          <button id="slide-prev" class="slide-nav-btn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div class="slide-dots" id="slide-dots"></div>
+          <button id="slide-next" class="slide-nav-btn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Share Modal for Instagram Stories -->
+    <div id="share-modal" class="share-modal hidden">
+      <div class="share-modal-backdrop" onclick="closeShareModal()"></div>
+      <div class="share-modal-content">
+        <button class="share-modal-close" onclick="closeShareModal()">×</button>
+        <h2 class="share-modal-title">📸 Share to Instagram</h2>
+        <p class="share-modal-subtitle">Download your slides and share them to your Instagram Stories!</p>
+        
+        <div class="share-actions">
+          <button class="share-action-btn primary" onclick="downloadCurrentSlide()">
+            <span class="share-action-icon">📥</span>
+            <div class="share-action-text">
+              <span class="share-action-label">Download This Slide</span>
+              <span class="share-action-desc">Save as image</span>
+            </div>
+          </button>
+          
+          <button class="share-action-btn" onclick="downloadAllSlides()">
+            <span class="share-action-icon">📦</span>
+            <div class="share-action-text">
+              <span class="share-action-label">Download All Slides</span>
+              <span class="share-action-desc">Get all slides as images</span>
+            </div>
+          </button>
+        </div>
+        
+        <div class="share-instructions">
+          <h3>How to share:</h3>
+          <ol>
+            <li>Download your slides</li>
+            <li>Open Instagram</li>
+            <li>Create a new Story</li>
+            <li>Select the downloaded images</li>
+            <li>Share with <strong>#RideWrapped2025</strong> 🏍️</li>
+          </ol>
+        </div>
+        
+        <div class="download-progress hidden" id="download-progress">
+          <div class="download-progress-bar">
+            <div class="download-progress-fill" id="download-progress-fill"></div>
+          </div>
+          <p class="download-progress-text" id="download-progress-text">Generating slides...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Instagram Share Button -->
+    <button id="instagram-share-btn" class="instagram-share-btn hidden" onclick="openShareModal()">
+      <span>📷</span>
+      <span>Share</span>
+    </button>
+
+    <!-- Canvas for share card generation -->
+    <canvas id="share-canvas" style="display: none"></canvas>
+
+    <script src="app.js"></script>
+  </body>
+</html>
