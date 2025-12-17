@@ -1341,6 +1341,49 @@ function setupKeyboardNavigation() {
 }
 
 // ===================================
+// Supabase Data Saving
+// ===================================
+async function saveToSupabase() {
+    // Check if Supabase is configured
+    if (typeof supabaseClient === 'undefined' || 
+        SUPABASE_URL === 'YOUR_SUPABASE_URL' || 
+        SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+        console.log('Supabase not configured, skipping save.');
+        return;
+    }
+
+    const personality = calculatePersonality();
+    const data = state.userData;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('ride_recaps')
+            .insert({
+                name: data.name,
+                total_distance: data.totalDistance,
+                locations: data.locations.filter(loc => loc.trim().length > 0),
+                favorite_time: data.favoriteTime,
+                favorite_terrain: data.favoriteTerrain,
+                longest_ride: data.longestRide,
+                favorite_day: data.favoriteDay,
+                preferred_weather: data.preferredWeather,
+                ride_length: data.rideLength,
+                memorable_moment: data.memorableMoment,
+                motorcycle_name: data.motorcycleName,
+                personality: personality.title
+            });
+        
+        if (error) {
+            console.error('Error saving to Supabase:', error);
+        } else {
+            console.log('✅ Data saved to Supabase successfully!');
+        }
+    } catch (error) {
+        console.error('Error saving to Supabase:', error);
+    }
+}
+
+// ===================================
 // Initialize
 // ===================================
 function init() {
@@ -1364,6 +1407,9 @@ function init() {
             
             // Geocode all locations
             await geocodeAllLocations();
+            
+            // Save data to Supabase (non-blocking)
+            saveToSupabase();
             
             // Generate and show slides
             generateSlides();
