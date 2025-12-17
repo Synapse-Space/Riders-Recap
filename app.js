@@ -1308,9 +1308,9 @@ function setupKeyboardNavigation() {
 // ===================================
 async function saveToSupabase() {
     // Check if Supabase is configured
-    if (typeof supabaseClient === 'undefined' || 
-        SUPABASE_URL === 'YOUR_SUPABASE_URL' || 
-        SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+    if (typeof window.supabaseClient === 'undefined' || 
+        !window.SUPABASE_URL || 
+        window.SUPABASE_URL === 'YOUR_SUPABASE_URL') {
         console.log('Supabase not configured, skipping save.');
         return;
     }
@@ -1319,7 +1319,7 @@ async function saveToSupabase() {
     const data = state.userData;
     
     try {
-        const { error } = await supabaseClient
+        const { error } = await window.supabaseClient
             .from('ride_recaps')
             .insert({
                 name: data.name,
