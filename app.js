@@ -9,22 +9,23 @@
 const state = {
     currentScreen: 'intro',
     currentQuestion: 1,
-    totalQuestions: 11,
+    totalQuestions: 12,
     currentSlide: 0,
-    totalSlides: 12,
+    totalSlides: 13,
     userData: {
         name: '',
         totalDistance: 0,
         locations: [], // Array of location names
         locationCoords: [], // Array of {lat, lng} after geocoding
-        daysRidden: 0,
         favoriteTime: '',
         favoriteTerrain: '',
         longestRide: 0,
         favoriteDay: '',
         preferredWeather: '',
         rideLength: '',
-        memorableMoment: ''
+        memorableMoment: '',
+        favoriteMemoryPhoto: null,
+        motorcycleName: ''
     },
     journeyMap: null,
     bikeMarker: null,
@@ -208,14 +209,15 @@ function validateCurrentQuestion() {
         case 1: return data.name.trim().length > 0;
         case 2: return data.totalDistance > 0;
         case 3: return data.locations.filter(loc => loc.trim().length > 0).length >= 2;
-        case 4: return data.daysRidden > 0;
-        case 5: return data.favoriteTime !== '';
-        case 6: return data.favoriteTerrain !== '';
-        case 7: return data.longestRide > 0;
-        case 8: return data.favoriteDay !== '';
-        case 9: return data.preferredWeather !== '';
-        case 10: return data.rideLength !== '';
-        case 11: return true; // Memory is optional
+        case 4: return data.favoriteTime !== '';
+        case 5: return data.favoriteTerrain !== '';
+        case 6: return data.longestRide > 0;
+        case 7: return data.favoriteDay !== '';
+        case 8: return data.preferredWeather !== '';
+        case 9: return data.rideLength !== '';
+        case 10: return true; // Memory is optional
+        case 11: return true; // Memory photo optional
+        case 12: return true; // Bike name optional
         default: return true;
     }
 }
@@ -263,10 +265,6 @@ function setupInputHandlers() {
     // Add location button
     document.getElementById('add-location-btn').addEventListener('click', addNewLocationInput);
     
-    document.getElementById('days-ridden').addEventListener('input', (e) => {
-        state.userData.daysRidden = parseInt(e.target.value) || 0;
-    });
-    
     document.getElementById('longest-ride').addEventListener('input', (e) => {
         state.userData.longestRide = parseInt(e.target.value) || 0;
     });
@@ -274,6 +272,13 @@ function setupInputHandlers() {
     document.getElementById('memorable-moment').addEventListener('input', (e) => {
         state.userData.memorableMoment = e.target.value;
     });
+
+    document.getElementById('bike-name').addEventListener('input', (e) => {
+        state.userData.motorcycleName = e.target.value;
+    });
+
+    // Photo uploads
+    setupPhotoUpload('memory-photo-upload', 'memory-photo-preview', 'favoriteMemoryPhoto');
     
     // Option cards
     document.querySelectorAll('.option-card').forEach(card => {
@@ -288,11 +293,11 @@ function setupInputHandlers() {
             
             // Store value
             switch (step) {
-                case 5: state.userData.favoriteTime = value; break;
-                case 6: state.userData.favoriteTerrain = value; break;
-                case 8: state.userData.favoriteDay = value; break;
-                case 9: state.userData.preferredWeather = value; break;
-                case 10: state.userData.rideLength = value; break;
+                case 4: state.userData.favoriteTime = value; break;
+                case 5: state.userData.favoriteTerrain = value; break;
+                case 7: state.userData.favoriteDay = value; break;
+                case 8: state.userData.preferredWeather = value; break;
+                case 9: state.userData.rideLength = value; break;
             }
             
             // Auto-advance after selection (except last step)
@@ -309,6 +314,26 @@ function setupInputHandlers() {
                 nextQuestion();
             }
         });
+    });
+}
+
+function setupPhotoUpload(inputId, previewId, stateKey) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    
+    if (!input || !preview) return;
+    
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.userData[stateKey] = e.target.result;
+                preview.querySelector('img').src = e.target.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -521,7 +546,6 @@ function calculatePersonality() {
     // Simple personality algorithm based on user choices
     if (favoriteTime === 'night') return personalities.nightOwl;
     if (rideLength === 'long' && totalDistance > 5000) return personalities.enduranceBeast;
-    if (daysRidden > 200) return personalities.commuterKing;
     if (favoriteTerrain === 'mountains' || favoriteTerrain === 'countryside') return personalities.explorer;
     if (rideLength === 'short' && favoriteTime === 'morning') return personalities.zenRider;
     if (state.userData.favoriteDay === 'saturday' || state.userData.favoriteDay === 'sunday') return personalities.weekendWarrior;
@@ -610,29 +634,6 @@ function generateSlides() {
                             <div class="route-stat-label">Route</div>
                         </div>
                     </div>
-                </div>
-            `
-        },
-        // Slide 4: Consistency
-        {
-            class: 'slide-consistency',
-            content: `
-                <div class="slide-bg">
-                    <div class="slide-bg-gradient"></div>
-                </div>
-                <div class="slide-content">
-                    <h1 class="slide-headline">
-                        You showed up<br>
-                        <span class="big-number">${data.daysRidden}</span>
-                        <span class="highlight">days</span>
-                    </h1>
-                    <div class="calendar-dots">
-                        ${generateCalendarDots(data.daysRidden)}
-                    </div>
-                    <p class="slide-subtext">
-                        Rain. Heat. Traffic.<br>
-                        None of it stopped you.
-                    </p>
                 </div>
             `
         },
@@ -764,6 +765,135 @@ function generateSlides() {
                         <p class="memory-quote">
                             ${data.memorableMoment || 'That feeling of the open road... nothing quite like it.'}
                         </p>
+                    </div>
+                </div>
+            `
+        },
+        // Slide 10: Memory Photo (Optional)
+        ...(data.favoriteMemoryPhoto ? [{
+            class: 'slide-photo-memory',
+            content: `
+                <div class="slide-bg">
+                    <div class="slide-bg-gradient"></div>
+                    <div class="photo-bg" style="background-image: url('${data.favoriteMemoryPhoto}');"></div>
+                </div>
+                <div class="slide-content">
+                    <h1 class="slide-headline" style="text-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                        A moment frozen in time
+                    </h1>
+                    <div class="photo-frame">
+                        <img src="${data.favoriteMemoryPhoto}" alt="Favorite Memory" class="slide-photo">
+                    </div>
+                </div>
+            `
+        }] : []),
+        // Slide 11: Bike Name (Optional)
+        ...(data.motorcycleName ? [{
+            class: 'slide-bike-name',
+            content: `
+                <div class="slide-bg">
+                    <div class="slide-bg-gradient"></div>
+                </div>
+                <div class="slide-content">
+                    <span class="slide-emoji">🏍️</span>
+                    <h1 class="slide-headline">
+                        Your Partner in Crime
+                    </h1>
+                    <div class="bike-name-display">
+                        <h2 class="bike-name-text">${data.motorcycleName}</h2>
+                    </div>
+                    <p class="slide-subtext">
+                        Through every twist and turn.
+                    </p>
+                </div>
+            `
+        }] : []),
+        // Slide 12: Summary Collage (Instagram Story Style) - ALL DATA
+        {
+            class: 'slide-summary',
+            content: `
+                <div class="slide-bg">
+                    <div class="slide-bg-gradient"></div>
+                    <div class="tire-track-bg"></div>
+                    ${data.favoriteMemoryPhoto ? `<div class="photo-bg" style="background-image: url('${data.favoriteMemoryPhoto}'); opacity: 0.2;"></div>` : ''}
+                </div>
+                <div class="slide-content">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h2 class="story-year">2025 RIDE REWIND</h2>
+                            <div class="story-line"></div>
+                        </div>
+                        
+                        <div class="story-user-section">
+                            <span class="story-avatar-large">🏍️</span>
+                            <div class="story-user-info">
+                                <span class="story-name">${data.name}</span>
+                                ${data.motorcycleName ? `<span class="story-bike-label">on ${data.motorcycleName}</span>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="story-main-stat">
+                            <h1 class="story-distance">${data.totalDistance.toLocaleString()}</h1>
+                            <span class="story-unit">KM</span>
+                        </div>
+                        
+                        <div class="story-mini-stats">
+                            <div class="mini-stat">
+                                <span class="mini-stat-value">${data.longestRide}</span>
+                                <span class="mini-stat-label">LONGEST KM</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="mini-stat-value">${data.locations.filter(l => l.trim()).length}</span>
+                                <span class="mini-stat-label">CITIES</span>
+                            </div>
+                        </div>
+
+                        ${data.favoriteMemoryPhoto ? `
+                        <div class="story-photo-frame">
+                            <img src="${data.favoriteMemoryPhoto}" class="story-photo" alt="Memory">
+                        </div>
+                        ` : ''}
+
+                        <div class="story-traits-grid">
+                            <div class="story-trait">
+                                <span class="trait-icon">${personality.icon}</span>
+                                <span class="trait-text">${personality.title.split(' ').pop()}</span>
+                            </div>
+                            <div class="story-trait">
+                                <span class="trait-icon">${time.emoji}</span>
+                                <span class="trait-text">${time.name.split(' ')[0]}</span>
+                            </div>
+                            <div class="story-trait">
+                                <span class="trait-icon">${terrain.emoji}</span>
+                                <span class="trait-text">${terrain.name}</span>
+                            </div>
+                            <div class="story-trait">
+                                <span class="trait-icon">${weather.emoji}</span>
+                                <span class="trait-text">${weather.name.split(' ')[0]}</span>
+                            </div>
+                        </div>
+
+                        <div class="story-extra-info">
+                            <div class="extra-item">
+                                <span class="extra-icon">📅</span>
+                                <span class="extra-text">${dayNames[data.favoriteDay]}s</span>
+                            </div>
+                            <div class="extra-item">
+                                <span class="extra-icon">🛤️</span>
+                                <span class="extra-text">${rideLengthData[data.rideLength]}</span>
+                            </div>
+                        </div>
+
+                        ${data.memorableMoment ? `
+                        <div class="story-quote">
+                            <span class="quote-icon">💭</span>
+                            <p class="quote-text">"${data.memorableMoment.length > 60 ? data.memorableMoment.substring(0, 60) + '...' : data.memorableMoment}"</p>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="story-footer">
+                            <div class="story-tag">#RideRewind2025</div>
+                        </div>
                     </div>
                 </div>
             `
@@ -1023,6 +1153,62 @@ async function captureSlideAsImage(slideIndex) {
             slide.style.opacity = '';
             slide.style.visibility = '';
             slide.style.transform = '';
+        }
+    }
+}
+
+async function downloadRideRewindSlide() {
+    // Find the Ride Rewind summary slide
+    const summarySlide = document.querySelector('.slide.slide-summary');
+    if (!summarySlide) {
+        alert('Could not find the Ride Rewind slide.');
+        return;
+    }
+    
+    const slideIndex = parseInt(summarySlide.dataset.slide);
+    
+    // Temporarily make the slide visible for capture
+    const wasActive = summarySlide.classList.contains('active');
+    if (!wasActive) {
+        summarySlide.style.opacity = '1';
+        summarySlide.style.visibility = 'visible';
+        summarySlide.style.transform = 'scale(1)';
+        summarySlide.style.position = 'absolute';
+        summarySlide.style.left = '0';
+        summarySlide.style.top = '0';
+    }
+    
+    try {
+        const canvas = await html2canvas(summarySlide, {
+            backgroundColor: '#0d1b2a',
+            scale: 2,
+            width: 1080 / 2,
+            height: 1920 / 2,
+            windowWidth: 540,
+            windowHeight: 960,
+            useCORS: true,
+            logging: false
+        });
+        
+        const imageData = canvas.toDataURL('image/png');
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.download = 'RideRewind_2025.png';
+        link.href = imageData;
+        link.click();
+    } catch (error) {
+        console.error('Error capturing Ride Rewind slide:', error);
+        alert('Error capturing the image. Please try again.');
+    } finally {
+        // Reset visibility if wasn't active
+        if (!wasActive) {
+            summarySlide.style.opacity = '';
+            summarySlide.style.visibility = '';
+            summarySlide.style.transform = '';
+            summarySlide.style.position = '';
+            summarySlide.style.left = '';
+            summarySlide.style.top = '';
         }
     }
 }
