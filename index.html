@@ -185,8 +185,20 @@
             <h2 class="section-title">Memories</h2>
             
             <div class="form-group">
-              <label class="form-label">Most memorable moment?</label>
-              <textarea id="memorable-moment" class="textarea-input" rows="3" placeholder="Describe that one unforgettable ride..."></textarea>
+              <label class="form-label">Favorite Quote?</label>
+              <select id="favorite-quote" class="select-input">
+                <option value="" disabled selected>Select a quote...</option>
+                <option value="Four wheels move the body. Two wheels move the soul.">Four wheels move the body. Two wheels move the soul.</option>
+                <option value="It's not the destination, it's the ride.">It's not the destination, it's the ride.</option>
+                <option value="Made Like a Gun, Goes Like a Bullet.">Made Like a Gun, Goes Like a Bullet.</option>
+                <option value="Live to Ride, Ride to Live.">Live to Ride, Ride to Live.</option>
+                <option value="Drop a gear and disappear.">Drop a gear and disappear.</option>
+                <option value="You never see a motorcycle parked outside a psychiatrist's office.">You never see a motorcycle parked outside a psychiatrist's office.</option>
+                <option value="Faster, Faster, until the thrill of speed overcomes the fear of death.">Faster, Faster, until the thrill of speed overcomes the fear of death.</option>
+                <option value="The road is my home.">The road is my home.</option>
+                <option value="Keep the rubber side down.">Keep the rubber side down.</option>
+                <option value="Riding is the art of being in the moment.">Riding is the art of being in the moment.</option>
+              </select>
             </div>
 
             <div class="form-group">
@@ -291,11 +303,7 @@
       </div>
     </div>
 
-    <!-- Floating Instagram Share Button -->
-    <button id="instagram-share-btn" class="instagram-share-btn hidden" onclick="downloadRideRewindSlide()">
-      <span>📸</span>
-      <span>Download</span>
-    </button>
+
 
     <!-- Canvas for share card generation -->
     <canvas id="share-canvas" style="display: none"></canvas>
