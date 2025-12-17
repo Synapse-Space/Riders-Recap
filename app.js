@@ -23,7 +23,7 @@ const state = {
         favoriteDay: '',
         preferredWeather: '',
         rideLength: '',
-        memorableMoment: '',
+        favoriteQuote: '',
         favoriteMemoryPhoto: null,
         motorcycleName: ''
     },
@@ -143,6 +143,7 @@ const App = {
     // Initialize the application
     init() {
         this.setupInputHandlers();
+        loadState(); // Load saved data
         
         // Show the questionnaire screen directly (skip intro for now or keep it?)
         // Let's keep the intro but change the "Start" button to go to the form
@@ -165,47 +166,54 @@ const App = {
         }
         
         // Show/hide Instagram share button based on screen
-        if (screenId === 'slides') {
-            showInstagramButton();
-        } else {
-            hideInstagramButton();
-        }
+        // if (screenId === 'slides') {
+        //     showInstagramButton();
+        // } else {
+        //     hideInstagramButton();
+        // }
     },
 
     setupInputHandlers() {
         // Text inputs
         document.getElementById('user-name').addEventListener('input', (e) => {
             state.userData.name = e.target.value;
+            saveState();
         });
         
         document.getElementById('total-distance').addEventListener('input', (e) => {
             state.userData.totalDistance = parseInt(e.target.value) || 0;
+            saveState();
         });
         
         // Location inputs
-        setupLocationInputHandlers(); // Ensures initial inputs are set up
-        document.getElementById('add-location-btn').addEventListener('click', addNewLocationInput);
+        // setupLocationInputHandlers(); // Removed, handled by loadState or default in restoreFormUI
+        document.getElementById('add-location-btn').addEventListener('click', () => addNewLocationInput());
         
         // Select inputs
         document.getElementById('favorite-time').addEventListener('change', (e) => {
             state.userData.favoriteTime = e.target.value;
+            saveState();
         });
 
         document.getElementById('favorite-terrain').addEventListener('change', (e) => {
             state.userData.favoriteTerrain = e.target.value;
+            saveState();
         });
 
         document.getElementById('preferred-weather').addEventListener('change', (e) => {
             state.userData.preferredWeather = e.target.value;
+            saveState();
         });
 
         document.getElementById('ride-length').addEventListener('change', (e) => {
             state.userData.rideLength = e.target.value;
+            saveState();
         });
 
         // Number inputs
         document.getElementById('longest-ride').addEventListener('input', (e) => {
             state.userData.longestRide = parseInt(e.target.value) || 0;
+            saveState();
         });
 
         // Day selector
@@ -216,22 +224,26 @@ const App = {
                 // Add to clicked
                 e.target.classList.add('active');
                 state.userData.favoriteDay = e.target.dataset.value;
+                saveState();
             });
         });
 
         // Bike name
         document.getElementById('bike-name').addEventListener('input', (e) => {
             state.userData.motorcycleName = e.target.value;
+            saveState();
         });
 
-        // Memorable moment
-        document.getElementById('memorable-moment').addEventListener('input', (e) => {
-            state.userData.memorableMoment = e.target.value;
+        // Favorite Quote
+        document.getElementById('favorite-quote').addEventListener('change', (e) => {
+            state.userData.favoriteQuote = e.target.value;
+            saveState();
         });
 
         // Photo upload
         setupPhotoUpload('memory-photo-upload', 'memory-photo-preview', (dataUrl) => {
             state.userData.favoriteMemoryPhoto = dataUrl;
+            saveState();
         });
 
         // Generate button
@@ -256,15 +268,29 @@ const App = {
         if (!data.rideLength) return false;
         if (data.longestRide <= 0) return false;
         if (!data.favoriteDay) return false;
-        // Memorable moment is optional? Let's make it required for a good recap
-        if (!data.memorableMoment.trim()) return false;
+        // Favorite quote is required
+        if (!data.favoriteQuote) return false;
         
         return true;
     },
 
-    generateRecap() {
-        this.showScreen('slides');
-        generateSlides();
+    async generateRecap() {
+        const btn = document.getElementById('generate-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="sparkle">✨</span> Generating...';
+
+        try {
+            await geocodeAllLocations();
+            this.showScreen('slides');
+            generateSlides();
+        } catch (error) {
+            console.error('Error generating recap:', error);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
     }
 };
 
@@ -280,11 +306,14 @@ function setupLocationInputHandlers() {
     }
     // Attach event listeners to existing and future location inputs
     document.querySelectorAll('.location-input').forEach(input => {
-        input.addEventListener('input', updateLocations);
+        input.addEventListener('input', () => {
+            updateLocations();
+            saveState();
+        });
     });
 }
 
-function addNewLocationInput() {
+function addNewLocationInput(value = '') {
     const container = document.getElementById('locations-container');
     const currentCount = container.querySelectorAll('.location-input-row').length;
     
@@ -300,6 +329,7 @@ function addNewLocationInput() {
             class="text-input location-input"
             placeholder="e.g. Next stop"
             autocomplete="off"
+            value="${value}"
         />
     `;
     
@@ -307,8 +337,11 @@ function addNewLocationInput() {
     
     // Add input handler to new input
     const newInput = newRow.querySelector('.location-input');
-    newInput.addEventListener('input', updateLocations);
-    newInput.focus();
+    newInput.addEventListener('input', () => {
+        updateLocations();
+        saveState();
+    });
+    if (!value) newInput.focus();
 }
 
 function updateLocations() {
@@ -720,7 +753,7 @@ function generateSlides() {
                     </h1>
                     <div class="memory-card">
                         <p class="memory-quote">
-                            ${data.memorableMoment || 'That feeling of the open road... nothing quite like it.'}
+                            ${data.favoriteQuote || 'Four wheels move the body. Two wheels move the soul.'}
                         </p>
                     </div>
                 </div>
@@ -841,10 +874,10 @@ function generateSlides() {
                             </div>
                         </div>
 
-                        ${data.memorableMoment ? `
+                        ${data.favoriteQuote ? `
                         <div class="story-quote">
                             <span class="quote-icon">💭</span>
-                            <p class="quote-text">"${data.memorableMoment.length > 60 ? data.memorableMoment.substring(0, 60) + '...' : data.memorableMoment}"</p>
+                            <p class="quote-text">"${data.favoriteQuote}"</p>
                         </div>
                         ` : ''}
                         
@@ -1026,30 +1059,7 @@ function animateNumber(element, targetValue) {
 // Share Functionality
 // ===================================
 function shareRideWrapped() {
-    const personality = calculatePersonality();
-    const data = state.userData;
-    const terrain = terrainData[data.favoriteTerrain];
-    
-    const shareText = `My 2025 RideWrapped 🏍️\n\n` +
-        `${personality.icon} I'm ${personality.title}\n` +
-        `📏 ${data.totalDistance.toLocaleString()} km ridden\n` +
-        `📅 ${data.daysRidden} days on two wheels\n` +
-        `${terrain.emoji} ${terrain.name} > Everything\n\n` +
-        `#RideWrapped2025`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'My RideWrapped 2025',
-            text: shareText
-        }).catch(console.log);
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(shareText).then(() => {
-            alert('Copied to clipboard! Share your RideWrapped on social media.');
-        }).catch(() => {
-            alert(shareText);
-        });
-    }
+    downloadRideRewindSlide();
 }
 
 // ===================================
@@ -1068,13 +1078,7 @@ function closeShareModal() {
     document.getElementById('download-progress').classList.add('hidden');
 }
 
-function showInstagramButton() {
-    document.getElementById('instagram-share-btn').classList.remove('hidden');
-}
 
-function hideInstagramButton() {
-    document.getElementById('instagram-share-btn').classList.add('hidden');
-}
 
 async function captureSlideAsImage(slideIndex) {
     const slide = document.querySelector(`.slide[data-slide="${slideIndex}"]`);
@@ -1313,3 +1317,75 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('slide-prev').addEventListener('click', prevSlide);
     document.getElementById('slide-next').addEventListener('click', nextSlide);
 });
+
+// ===================================
+// Persistence
+// ===================================
+function saveState() {
+    localStorage.setItem('rideWrappedData', JSON.stringify(state.userData));
+}
+
+function loadState() {
+    const saved = localStorage.getItem('rideWrappedData');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            state.userData = { ...state.userData, ...data };
+            restoreFormUI();
+        } catch (e) {
+            console.error('Failed to load state', e);
+        }
+    } else {
+        // Default initialization if no saved state
+        addNewLocationInput();
+        addNewLocationInput();
+    }
+}
+
+function restoreFormUI() {
+    const data = state.userData;
+    
+    // Text/Number inputs
+    if (data.name) document.getElementById('user-name').value = data.name;
+    if (data.totalDistance) document.getElementById('total-distance').value = data.totalDistance;
+    if (data.longestRide) document.getElementById('longest-ride').value = data.longestRide;
+    if (data.motorcycleName) document.getElementById('bike-name').value = data.motorcycleName;
+    if (data.favoriteQuote) document.getElementById('favorite-quote').value = data.favoriteQuote;
+    
+    // Selects
+    if (data.favoriteTime) document.getElementById('favorite-time').value = data.favoriteTime;
+    if (data.favoriteTerrain) document.getElementById('favorite-terrain').value = data.favoriteTerrain;
+    if (data.preferredWeather) document.getElementById('preferred-weather').value = data.preferredWeather;
+    if (data.rideLength) document.getElementById('ride-length').value = data.rideLength;
+    
+    // Day Selector
+    if (data.favoriteDay) {
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            if (btn.dataset.value === data.favoriteDay) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+    
+    // Locations
+    const container = document.getElementById('locations-container');
+    container.innerHTML = ''; // Clear defaults
+    if (data.locations && data.locations.length > 0) {
+        data.locations.forEach(loc => {
+            addNewLocationInput(loc);
+        });
+    } else {
+        // Default 2 empty inputs
+        addNewLocationInput();
+        addNewLocationInput();
+    }
+    
+    // Photo
+    if (data.favoriteMemoryPhoto) {
+        const preview = document.getElementById('memory-photo-preview');
+        preview.innerHTML = `<img src="${data.favoriteMemoryPhoto}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        preview.classList.remove('hidden');
+    }
+}
