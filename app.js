@@ -1308,6 +1308,12 @@ function setupKeyboardNavigation() {
 // ===================================
 async function saveToSupabase() {
     // Check if Supabase is configured
+    console.log('Checking Supabase config in saveToSupabase:', {
+        hasClient: typeof window.supabaseClient !== 'undefined',
+        url: window.SUPABASE_URL,
+        isPlaceholder: window.SUPABASE_URL === 'YOUR_SUPABASE_URL'
+    });
+
     if (typeof window.supabaseClient === 'undefined' || 
         !window.SUPABASE_URL || 
         window.SUPABASE_URL === 'YOUR_SUPABASE_URL') {
