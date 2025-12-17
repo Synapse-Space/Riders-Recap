@@ -137,220 +137,151 @@ const elements = {
 };
 
 // ===================================
-// Screen Transitions
+// App Logic (Refactored to single form)
 // ===================================
-function switchScreen(screenName) {
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    
-    const targetScreen = document.getElementById(`${screenName}-screen`);
-    if (targetScreen) {
-        targetScreen.classList.add('active');
-        state.currentScreen = screenName;
-    }
-    
-    // Show/hide Instagram share button based on screen
-    if (screenName === 'slides') {
-        showInstagramButton();
-    } else {
-        hideInstagramButton();
-    }
-}
-
-// ===================================
-// Questionnaire Logic
-// ===================================
-function updateProgress() {
-    const progress = (state.currentQuestion / state.totalQuestions) * 100;
-    elements.progressFill.style.width = `${progress}%`;
-}
-
-function showQuestion(questionNum) {
-    const slides = document.querySelectorAll('.question-slide');
-    
-    slides.forEach((slide, index) => {
-        const slideNum = index + 1;
-        slide.classList.remove('active', 'exit');
+const App = {
+    // Initialize the application
+    init() {
+        this.setupInputHandlers();
         
-        if (slideNum === questionNum) {
-            slide.classList.add('active');
-        } else if (slideNum < questionNum) {
-            slide.classList.add('exit');
+        // Show the questionnaire screen directly (skip intro for now or keep it?)
+        // Let's keep the intro but change the "Start" button to go to the form
+        document.getElementById('start-btn').addEventListener('click', () => {
+            this.showScreen('questionnaire');
+        });
+    },
+
+    showScreen(screenId) {
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        // Show requested screen
+        const screen = document.getElementById(`${screenId}-screen`);
+        if (screen) {
+            screen.classList.add('active');
+            state.currentScreen = screenId;
         }
-    });
-    
-    // Update navigation buttons
-    elements.prevBtn.disabled = questionNum === 1;
-    
-    if (questionNum === state.totalQuestions) {
-        elements.nextBtn.classList.add('hidden');
-        elements.generateBtn.classList.remove('hidden');
-    } else {
-        elements.nextBtn.classList.remove('hidden');
-        elements.generateBtn.classList.add('hidden');
-    }
-    
-    updateProgress();
-    
-    // Focus input if present
-    setTimeout(() => {
-        const activeSlide = document.querySelector('.question-slide.active');
-        const input = activeSlide?.querySelector('input, textarea');
-        if (input) input.focus();
-    }, 400);
-}
+        
+        // Show/hide Instagram share button based on screen
+        if (screenId === 'slides') {
+            showInstagramButton();
+        } else {
+            hideInstagramButton();
+        }
+    },
 
-function validateCurrentQuestion() {
-    const question = state.currentQuestion;
-    const data = state.userData;
-    
-    switch (question) {
-        case 1: return data.name.trim().length > 0;
-        case 2: return data.totalDistance > 0;
-        case 3: return data.locations.filter(loc => loc.trim().length > 0).length >= 2;
-        case 4: return data.favoriteTime !== '';
-        case 5: return data.favoriteTerrain !== '';
-        case 6: return data.longestRide > 0;
-        case 7: return data.favoriteDay !== '';
-        case 8: return data.preferredWeather !== '';
-        case 9: return data.rideLength !== '';
-        case 10: return true; // Memory is optional
-        case 11: return true; // Memory photo optional
-        case 12: return true; // Bike name optional
-        default: return true;
-    }
-}
+    setupInputHandlers() {
+        // Text inputs
+        document.getElementById('user-name').addEventListener('input', (e) => {
+            state.userData.name = e.target.value;
+        });
+        
+        document.getElementById('total-distance').addEventListener('input', (e) => {
+            state.userData.totalDistance = parseInt(e.target.value) || 0;
+        });
+        
+        // Location inputs
+        setupLocationInputHandlers(); // Ensures initial inputs are set up
+        document.getElementById('add-location-btn').addEventListener('click', addNewLocationInput);
+        
+        // Select inputs
+        document.getElementById('favorite-time').addEventListener('change', (e) => {
+            state.userData.favoriteTime = e.target.value;
+        });
 
-function nextQuestion() {
-    if (!validateCurrentQuestion()) {
-        // Shake animation for invalid
-        const activeSlide = document.querySelector('.question-slide.active');
-        activeSlide.style.animation = 'shake 0.5s ease';
-        setTimeout(() => {
-            activeSlide.style.animation = '';
-        }, 500);
-        return;
-    }
-    
-    if (state.currentQuestion < state.totalQuestions) {
-        state.currentQuestion++;
-        showQuestion(state.currentQuestion);
-    }
-}
+        document.getElementById('favorite-terrain').addEventListener('change', (e) => {
+            state.userData.favoriteTerrain = e.target.value;
+        });
 
-function prevQuestion() {
-    if (state.currentQuestion > 1) {
-        state.currentQuestion--;
-        showQuestion(state.currentQuestion);
-    }
-}
+        document.getElementById('preferred-weather').addEventListener('change', (e) => {
+            state.userData.preferredWeather = e.target.value;
+        });
 
-// ===================================
-// Input Handlers
-// ===================================
-function setupInputHandlers() {
-    // Text inputs
-    document.getElementById('user-name').addEventListener('input', (e) => {
-        state.userData.name = e.target.value;
-    });
-    
-    document.getElementById('total-distance').addEventListener('input', (e) => {
-        state.userData.totalDistance = parseInt(e.target.value) || 0;
-    });
-    
-    // Location inputs - setup initial handlers
-    setupLocationInputHandlers();
-    
-    // Add location button
-    document.getElementById('add-location-btn').addEventListener('click', addNewLocationInput);
-    
-    document.getElementById('longest-ride').addEventListener('input', (e) => {
-        state.userData.longestRide = parseInt(e.target.value) || 0;
-    });
-    
-    document.getElementById('memorable-moment').addEventListener('input', (e) => {
-        state.userData.memorableMoment = e.target.value;
-    });
+        document.getElementById('ride-length').addEventListener('change', (e) => {
+            state.userData.rideLength = e.target.value;
+        });
 
-    document.getElementById('bike-name').addEventListener('input', (e) => {
-        state.userData.motorcycleName = e.target.value;
-    });
+        // Number inputs
+        document.getElementById('longest-ride').addEventListener('input', (e) => {
+            state.userData.longestRide = parseInt(e.target.value) || 0;
+        });
 
-    // Photo uploads
-    setupPhotoUpload('memory-photo-upload', 'memory-photo-preview', 'favoriteMemoryPhoto');
-    
-    // Option cards
-    document.querySelectorAll('.option-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const value = this.dataset.value;
-            const parent = this.closest('.question-slide');
-            const step = parseInt(parent.dataset.step);
-            
-            // Remove selected from siblings
-            parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-            this.classList.add('selected');
-            
-            // Store value
-            switch (step) {
-                case 4: state.userData.favoriteTime = value; break;
-                case 5: state.userData.favoriteTerrain = value; break;
-                case 7: state.userData.favoriteDay = value; break;
-                case 8: state.userData.preferredWeather = value; break;
-                case 9: state.userData.rideLength = value; break;
-            }
-            
-            // Auto-advance after selection (except last step)
-            if (step < state.totalQuestions) {
-                setTimeout(() => nextQuestion(), 300);
+        // Day selector
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remove active class from all
+                document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                // Add to clicked
+                e.target.classList.add('active');
+                state.userData.favoriteDay = e.target.dataset.value;
+            });
+        });
+
+        // Bike name
+        document.getElementById('bike-name').addEventListener('input', (e) => {
+            state.userData.motorcycleName = e.target.value;
+        });
+
+        // Memorable moment
+        document.getElementById('memorable-moment').addEventListener('input', (e) => {
+            state.userData.memorableMoment = e.target.value;
+        });
+
+        // Photo upload
+        setupPhotoUpload('memory-photo-upload', 'memory-photo-preview', (dataUrl) => {
+            state.userData.favoriteMemoryPhoto = dataUrl;
+        });
+
+        // Generate button
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            if (this.validateForm()) {
+                this.generateRecap();
+            } else {
+                alert('Please fill in all required fields!');
             }
         });
-    });
-    
-    // Enter key to advance
-    document.querySelectorAll('.text-input, .number-input').forEach(input => {
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                nextQuestion();
-            }
-        });
-    });
-}
+    },
 
-function setupPhotoUpload(inputId, previewId, stateKey) {
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    
-    if (!input || !preview) return;
-    
-    input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                state.userData[stateKey] = e.target.result;
-                preview.querySelector('img').src = e.target.result;
-                preview.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
+    validateForm() {
+        const data = state.userData;
+        // Basic validation
+        if (!data.name.trim()) return false;
+        if (data.totalDistance <= 0) return false;
+        if (data.locations.filter(l => l.trim().length > 0).length < 2) return false;
+        if (!data.favoriteTime) return false;
+        if (!data.favoriteTerrain) return false;
+        if (!data.preferredWeather) return false;
+        if (!data.rideLength) return false;
+        if (data.longestRide <= 0) return false;
+        if (!data.favoriteDay) return false;
+        // Memorable moment is optional? Let's make it required for a good recap
+        if (!data.memorableMoment.trim()) return false;
+        
+        return true;
+    },
+
+    generateRecap() {
+        this.showScreen('slides');
+        generateSlides();
+    }
+};
 
 // ===================================
-// Location Input Management
+// Location Input Management (Helpers for App)
 // ===================================
 function setupLocationInputHandlers() {
-    document.querySelectorAll('.location-input').forEach((input, index) => {
-        input.addEventListener('input', () => {
-            collectLocations();
-        });
+    const container = document.getElementById('locations-container');
+    // Ensure we have at least two location inputs initially
+    if (container.children.length === 0) {
+        addNewLocationInput();
+        addNewLocationInput();
+    }
+    // Attach event listeners to existing and future location inputs
+    document.querySelectorAll('.location-input').forEach(input => {
+        input.addEventListener('input', updateLocations);
     });
-}
-
-function collectLocations() {
-    const inputs = document.querySelectorAll('.location-input');
-    state.userData.locations = Array.from(inputs).map(input => input.value.trim());
 }
 
 function addNewLocationInput() {
@@ -376,10 +307,36 @@ function addNewLocationInput() {
     
     // Add input handler to new input
     const newInput = newRow.querySelector('.location-input');
-    newInput.addEventListener('input', () => {
-        collectLocations();
-    });
+    newInput.addEventListener('input', updateLocations);
     newInput.focus();
+}
+
+function updateLocations() {
+    const inputs = document.querySelectorAll('.location-input');
+    state.userData.locations = Array.from(inputs)
+        .map(input => input.value)
+        .filter(val => val.trim().length > 0);
+}
+
+function setupPhotoUpload(inputId, previewId, callback) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    
+    if (!input || !preview) return;
+    
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                preview.innerHTML = `<img src="${dataUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                preview.classList.remove('hidden');
+                callback(dataUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }
 
 // ===================================
@@ -1343,63 +1300,16 @@ function setupKeyboardNavigation() {
 // ===================================
 // Initialize
 // ===================================
-function init() {
-    // Setup event listeners
-    elements.startBtn.addEventListener('click', () => {
-        switchScreen('questionnaire');
-        showQuestion(1);
-    });
+
+// Start the app
+document.addEventListener('DOMContentLoaded', () => {
+    App.init();
     
-    elements.prevBtn.addEventListener('click', prevQuestion);
-    elements.nextBtn.addEventListener('click', nextQuestion);
-    
-    elements.generateBtn.addEventListener('click', async () => {
-        if (validateCurrentQuestion()) {
-            // Collect final locations
-            collectLocations();
-            
-            // Show loading state
-            elements.generateBtn.innerHTML = '<span>Loading your journey...</span><span class="sparkle">🗺️</span>';
-            elements.generateBtn.disabled = true;
-            
-            // Geocode all locations
-            await geocodeAllLocations();
-            
-            // Generate and show slides
-            generateSlides();
-            switchScreen('slides');
-            
-            // Reset button state
-            elements.generateBtn.innerHTML = '<span>Generate My RideWrapped</span><span class="sparkle">✨</span>';
-            elements.generateBtn.disabled = false;
-            
-            // Animate first slide
-            setTimeout(() => {
-                animateSlideContent(0);
-            }, 500);
-        }
-    });
-    
-    elements.slidePrev.addEventListener('click', prevSlide);
-    elements.slideNext.addEventListener('click', nextSlide);
-    
-    setupInputHandlers();
+    // Setup global handlers for slides
     setupSwipeHandlers();
     setupKeyboardNavigation();
     
-    // Add shake animation keyframes
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-10px); }
-            40% { transform: translateX(10px); }
-            60% { transform: translateX(-10px); }
-            80% { transform: translateX(10px); }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Start the app
-document.addEventListener('DOMContentLoaded', init);
+    // Slide navigation buttons
+    document.getElementById('slide-prev').addEventListener('click', prevSlide);
+    document.getElementById('slide-next').addEventListener('click', nextSlide);
+});

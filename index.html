@@ -62,352 +62,155 @@
         <div class="bg-gradient"></div>
       </section>
 
-      <!-- Questionnaire Screen -->
-      <section id="questionnaire-screen" class="screen">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
 
-        <div class="questions-container">
-          <!-- Question 1: Name -->
-          <div class="question-slide active" data-step="1">
-            <div class="question-content">
-              <span class="question-number">01</span>
-              <h2 class="question-title">First, what should we call you?</h2>
-              <div class="input-group">
-                <input
-                  type="text"
-                  id="user-name"
-                  class="text-input"
-                  placeholder="Your name"
-                  autocomplete="off"
-                />
-              </div>
+    <section id="questionnaire-screen" class="screen">
+      <div class="form-container">
+        <h1 class="form-title">Your 2025 Rider Profile</h1>
+        <p class="form-subtitle">Tell us about your year on two wheels.</p>
+        
+        <div class="questionnaire-form">
+          <!-- Section 1: The Basics -->
+          <div class="form-section">
+            <h2 class="section-title">The Basics</h2>
+            
+            <div class="form-group">
+              <label class="form-label">What's your name?</label>
+              <input type="text" id="user-name" class="text-input" placeholder="Your Name" autocomplete="off">
             </div>
-          </div>
 
-          <!-- Question 2: Total Distance -->
-          <div class="question-slide" data-step="2">
-            <div class="question-content">
-              <span class="question-number">02</span>
-              <h2 class="question-title">
-                How many kilometers did you ride this year?
-              </h2>
-              <div class="input-group">
-                <input
-                  type="number"
-                  id="total-distance"
-                  class="number-input"
-                  placeholder="0"
-                  min="0"
-                  max="100000"
-                />
-                <span class="input-suffix">km</span>
-              </div>
-              <p class="input-hint">Your best estimate works!</p>
-            </div>
-          </div>
-
-          <!-- Question 3: Journey Locations -->
-          <div class="question-slide" data-step="3">
-            <div class="question-content">
-              <span class="question-number">03</span>
-              <h2 class="question-title">Where did you ride this year?</h2>
-              <p class="input-hint" style="margin-bottom: 1rem;">Add all the places you visited 🗺️</p>
-              <div class="locations-container" id="locations-container">
-                <div class="location-input-row" data-index="0">
-                  <span class="location-number">1</span>
-                  <input
-                    type="text"
-                    class="text-input location-input"
-                    placeholder="e.g. Mumbai"
-                    autocomplete="off"
-                  />
-                </div>
-                <div class="location-input-row" data-index="1">
-                  <span class="location-number">2</span>
-                  <input
-                    type="text"
-                    class="text-input location-input"
-                    placeholder="e.g. Pune"
-                    autocomplete="off"
-                  />
-                </div>
-                <div class="location-input-row" data-index="2">
-                  <span class="location-number">3</span>
-                  <input
-                    type="text"
-                    class="text-input location-input"
-                    placeholder="e.g. Goa"
-                    autocomplete="off"
-                  />
-                </div>
-              </div>
-              <button type="button" id="add-location-btn" class="add-location-btn">
-                <span>+ Add another stop</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Question 4: Favorite Time -->
-          <div class="question-slide" data-step="4">
-            <div class="question-content">
-              <span class="question-number">04</span>
-              <h2 class="question-title">When do you love to ride most?</h2>
-              <div class="options-grid">
-                <button class="option-card" data-value="dawn">
-                  <span class="option-emoji">🌅</span>
-                  <span class="option-label">Dawn</span>
-                </button>
-                <button class="option-card" data-value="morning">
-                  <span class="option-emoji">☀️</span>
-                  <span class="option-label">Morning</span>
-                </button>
-                <button class="option-card" data-value="afternoon">
-                  <span class="option-emoji">🌤️</span>
-                  <span class="option-label">Afternoon</span>
-                </button>
-                <button class="option-card" data-value="evening">
-                  <span class="option-emoji">🌆</span>
-                  <span class="option-label">Evening</span>
-                </button>
-                <button class="option-card" data-value="night">
-                  <span class="option-emoji">🌙</span>
-                  <span class="option-label">Night</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Question 5: Favorite Terrain -->
-          <div class="question-slide" data-step="5">
-            <div class="question-content">
-              <span class="question-number">05</span>
-              <h2 class="question-title">What terrain calls to you?</h2>
-              <div class="options-grid">
-                <button class="option-card" data-value="mountains">
-                  <span class="option-emoji">🏔️</span>
-                  <span class="option-label">Mountains</span>
-                </button>
-                <button class="option-card" data-value="highways">
-                  <span class="option-emoji">🛣️</span>
-                  <span class="option-label">Highways</span>
-                </button>
-                <button class="option-card" data-value="city">
-                  <span class="option-emoji">🌃</span>
-                  <span class="option-label">City Streets</span>
-                </button>
-                <button class="option-card" data-value="coastal">
-                  <span class="option-emoji">🌊</span>
-                  <span class="option-label">Coastal Roads</span>
-                </button>
-                <button class="option-card" data-value="countryside">
-                  <span class="option-emoji">🌾</span>
-                  <span class="option-label">Countryside</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Question 6: Longest Ride -->
-          <div class="question-slide" data-step="6">
-            <div class="question-content">
-              <span class="question-number">06</span>
-              <h2 class="question-title">What was your longest single ride?</h2>
-              <div class="input-group">
-                <input
-                  type="number"
-                  id="longest-ride"
-                  class="number-input"
-                  placeholder="0"
-                  min="0"
-                  max="10000"
-                />
+            <div class="form-group">
+              <label class="form-label">Total distance ridden in 2025?</label>
+              <div class="input-wrapper">
+                <input type="number" id="total-distance" class="number-input" placeholder="0" min="0">
                 <span class="input-suffix">km</span>
               </div>
             </div>
+
+            <div class="form-group">
+              <label class="form-label">Where did you ride? (Min. 2 cities)</label>
+              <div id="locations-container" class="locations-list">
+                <!-- Location inputs will be added here -->
+              </div>
+              <button id="add-location-btn" class="secondary-button small">+ Add Location</button>
+            </div>
           </div>
 
-          <!-- Question 7: Favorite Day -->
-          <div class="question-slide" data-step="7">
-            <div class="question-content">
-              <span class="question-number">07</span>
-              <h2 class="question-title">Your favorite day to ride?</h2>
-              <div class="options-grid days-grid">
-                <button class="option-card small" data-value="monday">
-                  Mon
-                </button>
-                <button class="option-card small" data-value="tuesday">
-                  Tue
-                </button>
-                <button class="option-card small" data-value="wednesday">
-                  Wed
-                </button>
-                <button class="option-card small" data-value="thursday">
-                  Thu
-                </button>
-                <button class="option-card small" data-value="friday">
-                  Fri
-                </button>
-                <button class="option-card small" data-value="saturday">
-                  Sat
-                </button>
-                <button class="option-card small" data-value="sunday">
-                  Sun
-                </button>
+          <!-- Section 2: Your Style -->
+          <div class="form-section">
+            <h2 class="section-title">Your Style</h2>
+            
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Favorite time to ride?</label>
+                <select id="favorite-time" class="select-input">
+                  <option value="" disabled selected>Select...</option>
+                  <option value="dawn">Dawn 🌅</option>
+                  <option value="morning">Morning ☀️</option>
+                  <option value="afternoon">Afternoon 🌤️</option>
+                  <option value="evening">Evening 🌆</option>
+                  <option value="night">Night 🌙</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Favorite terrain?</label>
+                <select id="favorite-terrain" class="select-input">
+                  <option value="" disabled selected>Select...</option>
+                  <option value="mountains">Mountains 🏔️</option>
+                  <option value="highways">Highways 🛣️</option>
+                  <option value="city">City Streets 🌃</option>
+                  <option value="coastal">Coastal Roads 🌊</option>
+                  <option value="countryside">Countryside 🌾</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Ideal weather?</label>
+                <select id="preferred-weather" class="select-input">
+                  <option value="" disabled selected>Select...</option>
+                  <option value="sunny">Sunny ☀️</option>
+                  <option value="cloudy">Cloudy ⛅</option>
+                  <option value="rainy">Rainy 🌧️</option>
+                  <option value="any">Any Weather 🌈</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Typical ride length?</label>
+                <select id="ride-length" class="select-input">
+                  <option value="" disabled selected>Select...</option>
+                  <option value="short">Quick Spins (Under 50km) ⚡</option>
+                  <option value="medium">Day Trips (50-200km) 🛤️</option>
+                  <option value="long">Long Hauls (200km+) 🗺️</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <!-- Question 8: Weather Preference -->
-          <div class="question-slide" data-step="8">
-            <div class="question-content">
-              <span class="question-number">08</span>
-              <h2 class="question-title">Your ideal riding weather?</h2>
-              <div class="options-grid">
-                <button class="option-card" data-value="sunny">
-                  <span class="option-emoji">☀️</span>
-                  <span class="option-label">Sunny</span>
-                </button>
-                <button class="option-card" data-value="cloudy">
-                  <span class="option-emoji">⛅</span>
-                  <span class="option-label">Cloudy</span>
-                </button>
-                <button class="option-card" data-value="rainy">
-                  <span class="option-emoji">🌧️</span>
-                  <span class="option-label">Rainy</span>
-                </button>
-                <button class="option-card" data-value="any">
-                  <span class="option-emoji">🌈</span>
-                  <span class="option-label">Any Weather</span>
-                </button>
+          <!-- Section 3: The Details -->
+          <div class="form-section">
+            <h2 class="section-title">The Details</h2>
+            
+            <div class="form-group">
+              <label class="form-label">Longest single ride?</label>
+              <div class="input-wrapper">
+                <input type="number" id="longest-ride" class="number-input" placeholder="0" min="0">
+                <span class="input-suffix">km</span>
               </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Favorite day to ride?</label>
+              <div class="days-selector" id="favorite-day-selector">
+                <button class="day-btn" data-value="monday">M</button>
+                <button class="day-btn" data-value="tuesday">T</button>
+                <button class="day-btn" data-value="wednesday">W</button>
+                <button class="day-btn" data-value="thursday">T</button>
+                <button class="day-btn" data-value="friday">F</button>
+                <button class="day-btn" data-value="saturday">S</button>
+                <button class="day-btn" data-value="sunday">S</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">What do you ride?</label>
+              <input type="text" id="bike-name" class="text-input" placeholder="e.g. Royal Enfield Classic 350" autocomplete="off">
             </div>
           </div>
 
-          <!-- Question 9: Ride Length Preference -->
-          <div class="question-slide" data-step="9">
-            <div class="question-content">
-              <span class="question-number">09</span>
-              <h2 class="question-title">Your typical ride length?</h2>
-              <div class="options-grid vertical">
-                <button class="option-card horizontal" data-value="short">
-                  <span class="option-emoji">⚡</span>
-                  <div class="option-text">
-                    <span class="option-label">Quick Spins</span>
-                    <span class="option-desc">Under 50 km</span>
-                  </div>
-                </button>
-                <button class="option-card horizontal" data-value="medium">
-                  <span class="option-emoji">🛤️</span>
-                  <div class="option-text">
-                    <span class="option-label">Day Trips</span>
-                    <span class="option-desc">50-200 km</span>
-                  </div>
-                </button>
-                <button class="option-card horizontal" data-value="long">
-                  <span class="option-emoji">🗺️</span>
-                  <div class="option-text">
-                    <span class="option-label">Long Hauls</span>
-                    <span class="option-desc">200+ km</span>
-                  </div>
-                </button>
-              </div>
+          <!-- Section 4: Memories -->
+          <div class="form-section">
+            <h2 class="section-title">Memories</h2>
+            
+            <div class="form-group">
+              <label class="form-label">Most memorable moment?</label>
+              <textarea id="memorable-moment" class="textarea-input" rows="3" placeholder="Describe that one unforgettable ride..."></textarea>
             </div>
-          </div>
 
-          <!-- Question 10: Memorable Moment -->
-          <div class="question-slide" data-step="10">
-            <div class="question-content">
-              <span class="question-number">10</span>
-              <h2 class="question-title">
-                Describe your most memorable ride this year
-              </h2>
-              <div class="input-group">
-                <textarea
-                  id="memorable-moment"
-                  class="textarea-input"
-                  placeholder="That early morning ride to the hills... the mist, the silence, the view at the top."
-                  rows="4"
-                ></textarea>
-              </div>
-              <p class="input-hint">This will appear in your RideWrapped ✨</p>
-            </div>
-          </div>
-
-          <!-- Question 11: Memory Photo -->
-          <div class="question-slide" data-step="11">
-            <div class="question-content">
-              <span class="question-number">11</span>
-              <h2 class="question-title">Share a photo of that memory?</h2>
-              <div class="input-group">
-                <input
-                  type="file"
-                  id="memory-photo-upload"
-                  class="file-input"
-                  accept="image/*"
-                  style="display: none;"
-                />
-                <label for="memory-photo-upload" class="cta-button" style="margin-top: 0; cursor: pointer; width: 100%; justify-content: center;">
-                  <span class="icon">📸</span>
-                  <span class="text">Choose Photo</span>
+            <div class="form-group">
+              <label class="form-label">Favorite memory photo (Optional)</label>
+              <div class="file-upload-wrapper">
+                <input type="file" id="memory-photo-upload" class="file-input" accept="image/*" style="display: none;">
+                <label for="memory-photo-upload" class="file-upload-btn">
+                  <span class="icon">📸</span> Choose Photo
                 </label>
-                <div id="memory-photo-preview" class="photo-preview hidden" style="margin-top: 1rem; max-width: 200px; margin-left: auto; margin-right: auto; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
-                    <img src="" alt="Preview" style="width: 100%; display: block;">
-                </div>
+                <div id="memory-photo-preview" class="photo-preview-mini hidden"></div>
               </div>
-              <p class="input-hint">Optional, but makes it look great!</p>
             </div>
           </div>
 
-          <!-- Question 12: Bike Name -->
-          <div class="question-slide" data-step="12">
-            <div class="question-content">
-              <span class="question-number">12</span>
-              <h2 class="question-title">What do you ride?</h2>
-              <div class="input-group">
-                <input
-                  type="text"
-                  id="bike-name"
-                  class="text-input"
-                  placeholder="e.g. Royal Enfield Classic 350"
-                  autocomplete="off"
-                />
-              </div>
-              <p class="input-hint">Your faithful steed deserves a mention.</p>
-            </div>
+          <!-- Submit Button -->
+          <div class="form-actions">
+            <button id="generate-btn" class="cta-button full-width">
+              <span>Generate My RideWrapped</span>
+              <span class="sparkle">✨</span>
+            </button>
           </div>
         </div>
-
-        <!-- Navigation -->
-        <div class="question-nav">
-          <button id="prev-btn" class="nav-button prev" disabled>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button id="next-btn" class="nav-button next">
-            <span>Next</span>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </button>
-          <button id="generate-btn" class="cta-button generate hidden">
-            <span>Generate My RideWrapped</span>
-            <span class="sparkle">✨</span>
-          </button>
-        </div>
-      </section>
+      </div>
+    </section>
 
       <!-- Slides Screen -->
       <section id="slides-screen" class="screen">
