@@ -1880,3 +1880,274 @@ body {
 .instagram-share-btn span:first-child {
   font-size: 1.25rem;
 }
+
+/* Photo Slides */
+.slide-photo-memory .slide-bg-gradient,
+.slide-photo-bike .slide-bg-gradient {
+    background: linear-gradient(180deg, rgba(13, 27, 42, 0.7) 0%, rgba(13, 27, 42, 0.9) 100%);
+    z-index: 2;
+}
+
+.photo-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px) brightness(0.6);
+    z-index: 1;
+    transform: scale(1.1);
+}
+
+.photo-frame {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 4/5;
+    margin: 2rem auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 4px solid rgba(255,255,255,0.1);
+    transform: rotate(-2deg);
+    transition: transform 0.5s ease;
+}
+
+.slide-photo-bike .photo-frame {
+    transform: rotate(2deg);
+}
+
+.bike-name-display {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 255, 200, 0.3);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: rotate(-1deg);
+    transition: transform 0.3s ease;
+}
+
+.bike-name-display:hover {
+    transform: rotate(0deg) scale(1.02);
+    border-color: var(--teal-electric);
+}
+
+.bike-name-text {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--white) 0%, var(--teal-electric) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+}
+
+/* Instagram Story Style Summary */
+.slide-summary .slide-content {
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.story-card {
+    width: 100%;
+    height: 100%;
+    max-width: 450px; /* Mobile width */
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Tire Track Background Effect */
+.tire-track-bg {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 10px,
+        transparent 10px,
+        transparent 20px
+    ),
+    repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    pointer-events: none;
+}
+
+.story-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.story-year {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: #e0ff00; /* Neon Yellow */
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px rgba(224, 255, 0, 0.5);
+    margin-bottom: 0.5rem;
+}
+
+.story-line {
+    width: 60px;
+    height: 4px;
+    background: #e0ff00;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(224, 255, 0, 0.5);
+}
+
+.story-main-stat {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.story-distance {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    line-height: 0.9;
+    color: #e0ff00;
+    text-shadow: 0 0 20px rgba(224, 255, 0, 0.3);
+    margin-bottom: 0.5rem;
+}
+
+.story-unit {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: #fff;
+    margin-left: 0.5rem;
+}
+
+.story-label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 0.2em;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+}
+
+.story-bike-section {
+    position: relative;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.story-bike-name {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    transform: rotate(-5deg);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-5deg);
+    z-index: 3;
+    white-space: nowrap;
+}
+
+.story-bike-image-placeholder {
+    width: 280px;
+    height: 200px;
+    margin: 0 auto;
+    border: 4px solid #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transform: rotate(3deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.story-bike-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-bike-icon {
+    font-size: 5rem;
+}
+
+.story-stats-grid {
+    display: flex;
+    justify-content: space-around;
+    margin-top: auto;
+    padding: 2rem 0;
+    border-top: 2px solid rgba(255,255,255,0.1);
+}
+
+.story-stat-item {
+    text-align: center;
+}
+
+.story-stat-value {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: #fff;
+}
+
+.story-stat-label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.1em;
+}
+
+.story-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    margin-top: 1rem;
+}
+
+.story-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.story-avatar {
+    font-size: 1.2rem;
+}
+
+.story-username {
+    color: #000;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.story-tag {
+    color: #000;
+    font-weight: 500;
+    font-size: 0.9rem;
+}

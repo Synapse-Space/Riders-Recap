@@ -149,29 +149,10 @@
             </div>
           </div>
 
-          <!-- Question 4: Days Ridden -->
+          <!-- Question 4: Favorite Time -->
           <div class="question-slide" data-step="4">
             <div class="question-content">
               <span class="question-number">04</span>
-              <h2 class="question-title">How many days did you ride?</h2>
-              <div class="input-group">
-                <input
-                  type="number"
-                  id="days-ridden"
-                  class="number-input"
-                  placeholder="0"
-                  min="0"
-                  max="365"
-                />
-                <span class="input-suffix">days</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Question 5: Favorite Time -->
-          <div class="question-slide" data-step="5">
-            <div class="question-content">
-              <span class="question-number">05</span>
               <h2 class="question-title">When do you love to ride most?</h2>
               <div class="options-grid">
                 <button class="option-card" data-value="dawn">
@@ -198,10 +179,10 @@
             </div>
           </div>
 
-          <!-- Question 6: Favorite Terrain -->
-          <div class="question-slide" data-step="6">
+          <!-- Question 5: Favorite Terrain -->
+          <div class="question-slide" data-step="5">
             <div class="question-content">
-              <span class="question-number">06</span>
+              <span class="question-number">05</span>
               <h2 class="question-title">What terrain calls to you?</h2>
               <div class="options-grid">
                 <button class="option-card" data-value="mountains">
@@ -228,10 +209,10 @@
             </div>
           </div>
 
-          <!-- Question 7: Longest Ride -->
-          <div class="question-slide" data-step="7">
+          <!-- Question 6: Longest Ride -->
+          <div class="question-slide" data-step="6">
             <div class="question-content">
-              <span class="question-number">07</span>
+              <span class="question-number">06</span>
               <h2 class="question-title">What was your longest single ride?</h2>
               <div class="input-group">
                 <input
@@ -247,10 +228,10 @@
             </div>
           </div>
 
-          <!-- Question 8: Favorite Day -->
-          <div class="question-slide" data-step="8">
+          <!-- Question 7: Favorite Day -->
+          <div class="question-slide" data-step="7">
             <div class="question-content">
-              <span class="question-number">08</span>
+              <span class="question-number">07</span>
               <h2 class="question-title">Your favorite day to ride?</h2>
               <div class="options-grid days-grid">
                 <button class="option-card small" data-value="monday">
@@ -278,10 +259,10 @@
             </div>
           </div>
 
-          <!-- Question 9: Weather Preference -->
-          <div class="question-slide" data-step="9">
+          <!-- Question 8: Weather Preference -->
+          <div class="question-slide" data-step="8">
             <div class="question-content">
-              <span class="question-number">09</span>
+              <span class="question-number">08</span>
               <h2 class="question-title">Your ideal riding weather?</h2>
               <div class="options-grid">
                 <button class="option-card" data-value="sunny">
@@ -304,10 +285,10 @@
             </div>
           </div>
 
-          <!-- Question 10: Ride Length Preference -->
-          <div class="question-slide" data-step="10">
+          <!-- Question 9: Ride Length Preference -->
+          <div class="question-slide" data-step="9">
             <div class="question-content">
-              <span class="question-number">10</span>
+              <span class="question-number">09</span>
               <h2 class="question-title">Your typical ride length?</h2>
               <div class="options-grid vertical">
                 <button class="option-card horizontal" data-value="short">
@@ -335,10 +316,10 @@
             </div>
           </div>
 
-          <!-- Question 11: Memorable Moment -->
-          <div class="question-slide" data-step="11">
+          <!-- Question 10: Memorable Moment -->
+          <div class="question-slide" data-step="10">
             <div class="question-content">
-              <span class="question-number">11</span>
+              <span class="question-number">10</span>
               <h2 class="question-title">
                 Describe your most memorable ride this year
               </h2>
@@ -351,6 +332,49 @@
                 ></textarea>
               </div>
               <p class="input-hint">This will appear in your RideWrapped ✨</p>
+            </div>
+          </div>
+
+          <!-- Question 11: Memory Photo -->
+          <div class="question-slide" data-step="11">
+            <div class="question-content">
+              <span class="question-number">11</span>
+              <h2 class="question-title">Share a photo of that memory?</h2>
+              <div class="input-group">
+                <input
+                  type="file"
+                  id="memory-photo-upload"
+                  class="file-input"
+                  accept="image/*"
+                  style="display: none;"
+                />
+                <label for="memory-photo-upload" class="cta-button" style="margin-top: 0; cursor: pointer; width: 100%; justify-content: center;">
+                  <span class="icon">📸</span>
+                  <span class="text">Choose Photo</span>
+                </label>
+                <div id="memory-photo-preview" class="photo-preview hidden" style="margin-top: 1rem; max-width: 200px; margin-left: auto; margin-right: auto; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
+                    <img src="" alt="Preview" style="width: 100%; display: block;">
+                </div>
+              </div>
+              <p class="input-hint">Optional, but makes it look great!</p>
+            </div>
+          </div>
+
+          <!-- Question 12: Bike Name -->
+          <div class="question-slide" data-step="12">
+            <div class="question-content">
+              <span class="question-number">12</span>
+              <h2 class="question-title">What do you ride?</h2>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="bike-name"
+                  class="text-input"
+                  placeholder="e.g. Royal Enfield Classic 350"
+                  autocomplete="off"
+                />
+              </div>
+              <p class="input-hint">Your faithful steed deserves a mention.</p>
             </div>
           </div>
         </div>
