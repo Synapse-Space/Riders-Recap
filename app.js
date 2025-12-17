@@ -282,6 +282,8 @@ const App = {
 
         try {
             await geocodeAllLocations();
+            // Save data to Supabase before showing slides
+            await saveToSupabase();
             this.showScreen('slides');
             generateSlides();
         } catch (error) {
@@ -772,7 +774,7 @@ function generateSlides() {
                         A moment frozen in time
                     </h1>
                     <div class="photo-frame">
-                        <img src="${data.favoriteMemoryPhoto}" alt="Favorite Memory" class="slide-photo">
+                        <div class="slide-photo" style="background-image: url('${data.favoriteMemoryPhoto}');"></div>
                     </div>
                 </div>
             `
@@ -840,7 +842,7 @@ function generateSlides() {
 
                         ${data.favoriteMemoryPhoto ? `
                         <div class="story-photo-frame">
-                            <img src="${data.favoriteMemoryPhoto}" class="story-photo" alt="Memory">
+                            <div class="story-photo" style="background-image: url('${data.favoriteMemoryPhoto}');"></div>
                         </div>
                         ` : ''}
 
@@ -1299,6 +1301,49 @@ function setupKeyboardNavigation() {
             }
         }
     });
+}
+
+// ===================================
+// Supabase Data Saving
+// ===================================
+async function saveToSupabase() {
+    // Check if Supabase is configured
+    if (typeof supabaseClient === 'undefined' || 
+        SUPABASE_URL === 'YOUR_SUPABASE_URL' || 
+        SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+        console.log('Supabase not configured, skipping save.');
+        return;
+    }
+
+    const personality = calculatePersonality();
+    const data = state.userData;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('ride_recaps')
+            .insert({
+                name: data.name,
+                total_distance: data.totalDistance,
+                locations: data.locations.filter(loc => loc.trim().length > 0),
+                favorite_time: data.favoriteTime,
+                favorite_terrain: data.favoriteTerrain,
+                longest_ride: data.longestRide,
+                favorite_day: data.favoriteDay,
+                preferred_weather: data.preferredWeather,
+                ride_length: data.rideLength,
+                memorable_moment: data.favoriteQuote, // Mapped from favoriteQuote
+                motorcycle_name: data.motorcycleName,
+                personality: personality.title
+            });
+        
+        if (error) {
+            console.error('Error saving to Supabase:', error);
+        } else {
+            console.log('✅ Data saved to Supabase successfully!');
+        }
+    } catch (error) {
+        console.error('Error saving to Supabase:', error);
+    }
 }
 
 // ===================================
