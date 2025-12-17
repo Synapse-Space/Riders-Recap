@@ -288,7 +288,7 @@ const App = {
             generateSlides();
         } catch (error) {
             console.error('Error generating recap:', error);
-            alert('Something went wrong. Please try again.');
+            // alert('Something went wrong. Please try again.');
         } finally {
             btn.disabled = false;
             btn.innerHTML = originalText;
