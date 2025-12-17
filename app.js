@@ -283,6 +283,10 @@ const App = {
         try {
             await geocodeAllLocations();
             // Save data to Supabase before showing slides
+            await geocodeAllLocations();
+            // Process user photo for adaptive framing
+            await processUserPhoto();
+            // Save data to Supabase before showing slides
             await saveToSupabase();
             this.showScreen('slides');
             generateSlides();
@@ -773,7 +777,7 @@ function generateSlides() {
                     <h1 class="slide-headline" style="text-shadow: 0 4px 12px rgba(0,0,0,0.5);">
                         A moment frozen in time
                     </h1>
-                    <div class="photo-frame">
+                    <div class="photo-frame" style="aspect-ratio: ${state.userData.photoAspectRatio || '4/5'};">
                         <div class="slide-photo" style="background-image: url('${data.favoriteMemoryPhoto}');"></div>
                     </div>
                 </div>
@@ -841,7 +845,7 @@ function generateSlides() {
                         </div>
 
                         ${data.favoriteMemoryPhoto ? `
-                        <div class="story-photo-frame">
+                        <div class="story-photo-frame" style="aspect-ratio: ${state.userData.photoAspectRatio || '1/1'};">
                             <div class="story-photo" style="background-image: url('${data.favoriteMemoryPhoto}');"></div>
                         </div>
                         ` : ''}
@@ -1300,6 +1304,28 @@ function setupKeyboardNavigation() {
                 prevSlide();
             }
         }
+    });
+}
+
+// ===================================
+// Image Processing
+// ===================================
+async function processUserPhoto() {
+    if (!state.userData.favoriteMemoryPhoto) return;
+
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = function() {
+            // Store as a CSS string
+            state.userData.photoAspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+            console.log('Calculated photo aspect ratio:', state.userData.photoAspectRatio);
+            resolve();
+        };
+        img.onerror = function() {
+            console.error('Failed to load user photo for processing');
+            resolve(); // Resolve anyway to not block flow
+        };
+        img.src = state.userData.favoriteMemoryPhoto;
     });
 }
 

@@ -2008,7 +2008,10 @@ body {
     position: relative;
     width: 100%;
     max-width: 320px;
-    aspect-ratio: 4/5;
+    width: 100%;
+    max-width: 320px;
+    /* aspect-ratio: 4/5;  <-- Removed to allow inline style override */
+    max-height: 60vh; /* Prevent it from being too tall */
     margin: 2rem auto;
     border-radius: 20px;
     overflow: hidden;
@@ -2331,7 +2334,10 @@ body {
 .story-photo-frame {
     width: 100%;
     max-width: 200px;
-    aspect-ratio: 1;
+    width: 100%;
+    max-width: 200px;
+    /* aspect-ratio: 1; <-- Removed to allow inline style override */
+    max-height: 300px;
     margin: 0.75rem auto;
     border-radius: 16px;
     overflow: hidden;
