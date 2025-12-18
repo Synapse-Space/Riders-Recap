@@ -844,12 +844,6 @@ function generateSlides() {
                             </div>
                         </div>
 
-                        ${data.favoriteMemoryPhoto ? `
-                        <div class="story-photo-frame" style="aspect-ratio: ${state.userData.photoAspectRatio || '1/1'};">
-                            <div class="story-photo" style="background-image: url('${data.favoriteMemoryPhoto}');"></div>
-                        </div>
-                        ` : ''}
-
                         <div class="story-traits-grid">
                             <div class="story-trait">
                                 <span class="trait-icon">${personality.icon}</span>
@@ -1159,11 +1153,62 @@ async function downloadRideRewindSlide() {
         
         const imageData = canvas.toDataURL('image/png');
         
-        // Create download link
-        const link = document.createElement('a');
-        link.download = 'RideRewind_2025.png';
-        link.href = imageData;
-        link.click();
+        // Check if iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if (isIOS) {
+            // Show modal for iOS users
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            modal.style.zIndex = '10000';
+            modal.style.display = 'flex';
+            modal.style.flexDirection = 'column';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '20px';
+
+            const img = new Image();
+            img.src = imageData;
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '80%';
+            img.style.borderRadius = '10px';
+            img.style.boxShadow = '0 0 20px rgba(0,255,200,0.5)';
+
+            const msg = document.createElement('p');
+            msg.innerText = 'Long press the image to save it to your Photos';
+            msg.style.color = '#fff';
+            msg.style.fontFamily = 'sans-serif';
+            msg.style.marginTop = '20px';
+            msg.style.fontSize = '18px';
+            msg.style.textAlign = 'center';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.innerText = 'Close';
+            closeBtn.style.marginTop = '20px';
+            closeBtn.style.padding = '10px 20px';
+            closeBtn.style.backgroundColor = 'rgba(255,255,255,0.2)';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.border = 'none';
+            closeBtn.style.borderRadius = '20px';
+            closeBtn.style.fontSize = '16px';
+            closeBtn.onclick = () => document.body.removeChild(modal);
+
+            modal.appendChild(img);
+            modal.appendChild(msg);
+            modal.appendChild(closeBtn);
+            document.body.appendChild(modal);
+        } else {
+            // Standard download for other devices
+            const link = document.createElement('a');
+            link.download = 'RideRewind_2025.png';
+            link.href = imageData;
+            link.click();
+        }
     } catch (error) {
         console.error('Error capturing Ride Rewind slide:', error);
         alert('Error capturing the image. Please try again.');
@@ -1323,8 +1368,11 @@ async function processUserPhoto() {
         };
         img.onerror = function() {
             console.error('Failed to load user photo for processing');
-            resolve(); // Resolve anyway to not block flow
+            state.userData.photoAspectRatio = '4/5'; // Fallback
+            resolve(); 
         };
+        // Add crossOrigin attribute to avoid tainting canvas in Safari
+        img.crossOrigin = "Anonymous";
         img.src = state.userData.favoriteMemoryPhoto;
     });
 }
